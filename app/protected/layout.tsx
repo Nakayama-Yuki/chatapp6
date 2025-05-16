@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import ChatNavigation from "@/components/chat/chat-navigation";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { signOutAction } from "@/app/actions";
 
 /**
  * プロテクトエリアのレイアウトコンポーネント
@@ -22,14 +23,6 @@ export default async function ProtectedLayout({
     return redirect("/sign-in");
   }
 
-  // ログアウト処理（サーバーアクション）
-  const signOut = async () => {
-    "use server";
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    return redirect("/sign-in");
-  };
-
   return (
     <div className="flex-1 w-full flex flex-col max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       {/* ヘッダー */}
@@ -38,7 +31,7 @@ export default async function ProtectedLayout({
 
         <div className="flex items-center gap-4">
           <span className="text-sm">{user.email}</span>
-          <form action={signOut}>
+          <form action={signOutAction}>
             <button className="py-2 px-4 rounded-md bg-foreground/10 hover:bg-foreground/20 transition">
               ログアウト
             </button>
