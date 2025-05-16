@@ -10,6 +10,7 @@ interface Message {
   isMine: boolean;
   isSystem: boolean;
   created_at?: string;
+  userName?: string;
 }
 
 /**
