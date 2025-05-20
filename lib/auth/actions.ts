@@ -5,6 +5,10 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+/**
+ * ユーザー登録アクション
+ * メールアドレス、パスワード、名前を受け取り、ユーザー登録を行います
+ */
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const password = formData.get("password")?.toString();
@@ -46,6 +50,10 @@ export const signUpAction = async (formData: FormData) => {
   }
 };
 
+/**
+ * ログインアクション
+ * メールアドレスとパスワードを受け取り、認証を行います
+ */
 export const signInAction = async (formData: FormData) => {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -63,6 +71,10 @@ export const signInAction = async (formData: FormData) => {
   return redirect("/protected");
 };
 
+/**
+ * パスワードリセットメール送信アクション
+ * メールアドレスを受け取り、リセットメールを送信します
+ */
 export const forgotPasswordAction = async (formData: FormData) => {
   const email = formData.get("email")?.toString();
   const supabase = await createClient();
@@ -97,6 +109,10 @@ export const forgotPasswordAction = async (formData: FormData) => {
   );
 };
 
+/**
+ * パスワードリセットアクション
+ * 新しいパスワードを受け取り、更新を行います
+ */
 export const resetPasswordAction = async (formData: FormData) => {
   const supabase = await createClient();
 
@@ -134,6 +150,9 @@ export const resetPasswordAction = async (formData: FormData) => {
   encodedRedirect("success", "/protected/reset-password", "Password updated");
 };
 
+/**
+ * ログアウトアクション
+ */
 export const signOutAction = async () => {
   const supabase = await createClient();
   await supabase.auth.signOut();

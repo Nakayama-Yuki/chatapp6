@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { updateUserProfile } from "./actions";
+import { updateUserProfile } from "@/lib/profile/actions";
 import { User } from "@supabase/supabase-js";
 
 /**
