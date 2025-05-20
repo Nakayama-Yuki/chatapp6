@@ -1,8 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import ChatNavigation from "@/components/chat/chat-navigation";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { signOutAction } from "@/app/actions";
 
 /**
  * プロテクトエリアのレイアウトコンポーネント
@@ -28,15 +26,6 @@ export default async function ProtectedLayout({
       {/* ヘッダー */}
       <header className="flex justify-between items-center mb-8">
         <h1 className="text-2xl font-bold">Supabase Chat App</h1>
-
-        <div className="flex items-center gap-4">
-          <span className="text-sm">{user.email}</span>
-          <form action={signOutAction}>
-            <button className="py-2 px-4 rounded-md bg-foreground/10 hover:bg-foreground/20 transition">
-              ログアウト
-            </button>
-          </form>
-        </div>
       </header>
 
       {/* ナビゲーション */}
