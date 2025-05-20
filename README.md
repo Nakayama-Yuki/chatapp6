@@ -1,104 +1,103 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
+# chatapp6
 
-<p align="center">
- The fastest way to build apps with Next.js and Supabase
-</p>
+Next.js 15（App Router）＋ React 19 、Supabase Realtime を活用するリアルタイムチャットアプリです。
 
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#deploy-to-vercel"><strong>Deploy to Vercel</strong></a> ·
-  <a href="#clone-and-run-locally"><strong>Clone and run locally</strong></a> ·
-  <a href="#feedback-and-issues"><strong>Feedback and issues</strong></a>
-  <a href="#more-supabase-examples"><strong>More Examples</strong></a>
-</p>
-<br/>
+## 主な機能
 
-## Features
+- **リアルタイム通信**  
+  Supabase Realtime（pub/sub）で双方向のチャット通信を実現。Socket.io の代替として軽量かつ高パフォーマンス。
 
-- Works across the entire [Next.js](https://nextjs.org) stack
-  - App Router
-  - Pages Router
-  - Middleware
-  - Client
-  - Server
-  - It just works!
-- supabase-ssr. A package to configure Supabase Auth to use cookies
-- Styling with [Tailwind CSS](https://tailwindcss.com)
-- Components with [shadcn/ui](https://ui.shadcn.com/)
-- Optional deployment with [Supabase Vercel Integration and Vercel deploy](#deploy-your-own)
-  - Environment variables automatically assigned to Vercel project
+- **メッセージの送受信**  
+  チャットルームごとにメッセージを保存し、画面上に一覧表示。フォーム送信は `useFormStatus` フックでローディング対応。
 
-## Demo
+- **オンラインステータス表示**  
+  Supabase の Presence 機能を使って、チャットルーム内の参加ユーザーをリアルタイムにトラッキング。
 
-You can view a fully working demo at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+- **ユーザー認証**  
+  サインアップ／サインイン／パスワードリセット機能を Next.js の Server Actions と Supabase Auth で実装。
 
-## Deploy to Vercel
+- **プロファイル編集**  
+  ログインユーザーはプロフィール名を編集可能。変更を即座に反映。
 
-Vercel deployment will guide you through creating a Supabase account and project.
+- **チャットルーム管理**  
+  新規チャットルームの作成、既存ルームへの参加、ルーム一覧表示。
 
-After installation of the Supabase integration, all relevant environment variables will be assigned to the project so the deployment is fully functioning.
+## 技術スタック
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
+- Next.js 15（App Router）
+- React 19
+- TypeScript 5
+- Tailwind CSS 4
+- Supabase (Realtime, Auth, SSR)
+- PNPM
+- shadcn/ui + Radix UI
+- next-themes（ダーク／ライト切替）
 
-The above will also clone the Starter kit to your GitHub, you can clone that locally and develop locally.
+## ディレクトリ構成
 
-If you wish to just develop locally and not deploy to Vercel, [follow the steps below](#clone-and-run-locally).
+```
+├── app                    # Next.js App Router 配下のページ・レイアウト
+│   ├── (auth-pages)       # 認証用サブツリー（sign-in, sign-up, forgot-password）
+│   ├── auth/callback      # Supabase OAuth コールバック用 Route
+│   ├── protected          # 認証後のみアクセス可能なページ群
+│   │   ├── chat           # チャットルームページ
+│   │   ├── profile        # プロファイル編集ページ
+│   │   └── reset-password # パスワードリセットページ
+│   ├── actions.ts         # サインイン／サインアップなどの Server Actions
+│   ├── layout.tsx         # アプリ全体の共通レイアウト (Server Component)
+│   └── globals.css        # Tailwind グローバルスタイル
+├── components             # UI コンポーネント群 (Client Components)
+│   ├── chat               # チャット専用コンポーネント
+│   ├── ui                 # ボタン・入力欄・バッジなどの共通UI
+│   └── submit-button.tsx  # フォーム送信時のローディングボタン
+├── utils                  # 共通ユーティリティ
+│   └── supabase           # Supabase クライアント初期化／ミドルウェア／SSR
+├── supabase               # DB スキーマ／マイグレーション
+├── middleware.ts          # 認証セッションを更新するミドルウェア
+├── next.config.ts         # Next.js 設定
+├── tsconfig.json          # TypeScript 設定
+└── package.json           # パッケージ管理 (pnpm)
+```
 
-## Clone and run locally
+## 環境構築と実行方法
 
-1. You'll first need a Supabase project which can be made [via the Supabase dashboard](https://database.new)
-
-2. Create a Next.js app using the Supabase Starter template npx command
-
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   yarn create next-app --example with-supabase with-supabase-app
-   ```
-
-   ```bash
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
-
-3. Use `cd` to change into the app's directory
+1. **リポジトリをクローン**
 
    ```bash
-   cd with-supabase-app
+   git clone <リポジトリURL> chatapp6
+   cd chatapp6
    ```
 
-4. Rename `.env.example` to `.env.local` and update the following:
-
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[INSERT SUPABASE PROJECT URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[INSERT SUPABASE PROJECT API ANON KEY]
-   ```
-
-   Both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` can be found in [your Supabase project's API settings](https://app.supabase.com/project/_/settings/api)
-
-5. You can now run the Next.js local development server:
+2. **依存パッケージをインストール**
 
    ```bash
-   npm run dev
+   pnpm install
    ```
 
-   The starter kit should now be running on [localhost:3000](http://localhost:3000/).
+3. **環境変数を設定**  
+   プロジェクトルートに `.env.local` を作成し、以下を定義します：
 
-6. This template comes with the default shadcn/ui style initialized. If you instead want other ui.shadcn styles, delete `components.json` and [re-install shadcn/ui](https://ui.shadcn.com/docs/installation/next)
+   ```text
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
 
-> Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
+4. **Supabase プロジェクトの準備**
 
-## Feedback and issues
+   - Supabase ダッシュボードで新規プロジェクトを作成
+   - `supabase/schema.sql` に沿ってテーブルを作成
+   - 必要に応じて `supabase/migrations` を適用
 
-Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).
+5. **開発サーバーを起動**
 
-## More Supabase examples
+   ```bash
+   pnpm dev
+   ```
 
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+6. **ブラウザで確認**  
+   http://localhost:3000 にアクセスし、チャットアプリを操作できます。
+
+## ライセンス
+
+This project is licensed under the [MIT License](./LICENSE).  
+You are free to use, modify, and distribute this software, provided that proper attribution is given.
