@@ -15,6 +15,7 @@ ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID NOT NULL REFERENCES auth.users ON DELETE CASCADE,
   email TEXT NOT NULL,
+  name TEXT,
   avatar_url TEXT,
   PRIMARY KEY (id)
 );
@@ -127,7 +128,16 @@ WITH CHECK (
 CREATE OR REPLACE FUNCTION insert_user() RETURNS TRIGGER AS
 $$
   BEGIN
-    INSERT INTO public.profiles (id, email) VALUES (NEW.id, NEW.email); RETURN NEW;
+    INSERT INTO public.profiles (id, email, name) 
+    VALUES (
+      NEW.id, 
+      NEW.email, 
+      COALESCE(
+        (NEW.raw_user_meta_data->>'name')::TEXT,
+        SPLIT_PART(NEW.email, '@', 1)
+      )
+    ); 
+    RETURN NEW;
   END;
 $$ LANGUAGE plpgsql
    SECURITY DEFINER
