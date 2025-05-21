@@ -73,6 +73,11 @@ export default function ChatMessage({ message }: { message: Message }) {
       className={`flex flex-col ${
         message.isMine ? "items-end" : "items-start"
       }`}>
+      {!message.isSystem && !message.isMine && message.userName && (
+        <span className="text-xs text-gray-600 mb-1 px-1 font-medium">
+          {message.userName}
+        </span>
+      )}
       <div className={getMessageStyles()}>{message.content}</div>
 
       {/* メッセージの時間表示（システムメッセージ以外） */}

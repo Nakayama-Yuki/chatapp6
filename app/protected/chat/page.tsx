@@ -17,6 +17,7 @@ interface Message {
   isMine: boolean;
   isSystem: boolean;
   created_at?: string;
+  userName?: string;
 }
 
 /**
@@ -28,12 +29,15 @@ export default function ChatPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [rooms, setRooms] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [users, setUsers] = useState<Set<string>>(new Set());
+  const [users, setUsers] = useState<
+    Map<string, { name: string; email: string }>
+  >(new Map());
   const [selectedRoom, setSelectedRoom] = useState<string | undefined>();
   const [mainChannel, setMainChannel] = useState<RealtimeChannel | null>(null);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>("");
 
   // Supabaseクライアントの初期化
   const supabase = createClient();
@@ -55,7 +59,7 @@ export default function ChatPage() {
 
     const user = await supabase
       .from("profiles")
-      .select("id")
+      .select("id, name")
       .eq("email", email);
 
     if (!user.data?.length) {
@@ -70,7 +74,10 @@ export default function ChatPage() {
         .from("rooms_users")
         .upsert({ user_id: user.data[0].id, room_topic: room.data?.[0].topic });
 
-      addSystemMessage(`${email} をチャンネル ${selectedRoom} に追加しました`);
+      const displayName = user.data[0].name || email;
+      addSystemMessage(
+        `${displayName} をチャンネル ${selectedRoom} に追加しました`
+      );
     }
   };
 
@@ -95,8 +102,14 @@ export default function ChatPage() {
    * @param mine 自分のメッセージかどうか
    * @param system システムメッセージかどうか
    * @param message メッセージ内容
+   * @param userName ユーザー名（オプション）
    */
-  const addMessage = (mine: boolean, system: boolean, message: string) => {
+  const addMessage = (
+    mine: boolean,
+    system: boolean,
+    message: string,
+    userName?: string
+  ) => {
     setMessages((prev) => [
       ...prev,
       {
@@ -104,6 +117,7 @@ export default function ChatPage() {
         user_id: mine ? user?.id || "" : "other",
         isMine: mine,
         isSystem: system,
+        userName: userName || user?.email?.split("@")[0] || "",
       },
     ]);
   };
@@ -113,7 +127,26 @@ export default function ChatPage() {
     // ユーザー情報の取得
     supabase.auth
       .getUser()
-      .then((data) => setUser(data.data.user))
+      .then(async (data) => {
+        setUser(data.data.user);
+
+        // ユーザー名を取得
+        if (data.data.user) {
+          const { data: profileData } = await supabase
+            .from("profiles")
+            .select("name")
+            .eq("id", data.data.user.id)
+            .single();
+
+          if (profileData && profileData.name) {
+            setUserName(profileData.name);
+          } else {
+            setUserName(data.data.user.email?.split("@")[0] || "");
+          }
+        }
+
+        return data;
+      })
       .then(async () => {
         // リアルタイム認証設定
         const token = (await supabase.auth.getSession()).data.session
@@ -147,7 +180,7 @@ export default function ChatPage() {
       channel.unsubscribe();
     }
 
-    setUsers(new Set());
+    setUsers(new Map());
 
     // 新しいチャンネルの購読設定
     let newChannel = supabase.channel(selectedRoom, {
@@ -159,18 +192,38 @@ export default function ChatPage() {
 
     newChannel
       .on("broadcast", { event: "message" }, ({ payload }) => {
-        addMessage(payload.user_id == user?.id, false, payload.message);
+        // 自分のメッセージかどうかを判定
+        const isMine = payload.user_id === user?.id;
+        // メッセージを追加（受信メッセージには送信者の名前情報も含める）
+        addMessage(
+          isMine,
+          false,
+          payload.message,
+          isMine ? userName : payload.userName
+        );
       })
       .on("presence", { event: "join" }, ({ newPresences }) => {
         // 新たに参加したユーザーを追加
-        const updatedUsers = new Set(users);
-        newPresences.forEach(({ email }) => updatedUsers.add(email));
+        const updatedUsers = new Map(users);
+        newPresences.forEach((presence) => {
+          updatedUsers.set(presence.email, {
+            email: presence.email,
+            name: presence.name || presence.email.split("@")[0],
+          });
+        });
         setUsers(updatedUsers);
       })
       .on("presence", { event: "leave" }, ({ leftPresences }) => {
         // 退出したユーザーを削除
-        const updatedUsers = new Set(users);
-        leftPresences.forEach(({ email }) => updatedUsers.delete(email));
+        const updatedUsers = new Map(users);
+        leftPresences.forEach((presence) => {
+          // 同じメールアドレスを持つユーザーを検索して削除
+          users.forEach((user, key) => {
+            if (user.email === presence.email) {
+              updatedUsers.delete(key);
+            }
+          });
+        });
         setUsers(updatedUsers);
       })
       .subscribe((status, err) => {
@@ -179,7 +232,7 @@ export default function ChatPage() {
         if (status === "SUBSCRIBED") {
           setChannel(newChannel);
           // プレゼンス情報を送信
-          newChannel.track({ email: user?.email });
+          newChannel.track({ email: user?.email, name: userName });
           setError(null);
 
           // 過去のメッセージを取得（オプション）
@@ -207,6 +260,7 @@ export default function ChatPage() {
    * @param roomTopic ルームトピック
    */
   const fetchRoomMessages = async (roomTopic: string) => {
+    // メッセージデータを取得
     const { data, error } = await supabase
       .from("messages")
       .select("*")
@@ -220,6 +274,24 @@ export default function ChatPage() {
     }
 
     if (data && data.length > 0) {
+      // メッセージに対応するユーザー名を取得するため、ユーザーIDの一覧を作成
+      const userIds = [...new Set(data.map((msg) => msg.user_id))];
+
+      // プロフィール情報を取得
+      const { data: profilesData } = await supabase
+        .from("profiles")
+        .select("id, name")
+        .in("id", userIds);
+
+      // IDをキーとするユーザー名マップを作成
+      const userNameMap = new Map();
+      if (profilesData) {
+        profilesData.forEach((profile) => {
+          userNameMap.set(profile.id, profile.name);
+        });
+      }
+
+      // 各メッセージにユーザー名を追加
       setMessages(
         data.map((msg) => ({
           id: msg.id,
@@ -228,6 +300,7 @@ export default function ChatPage() {
           isMine: msg.user_id === user?.id,
           isSystem: false,
           created_at: msg.created_at,
+          userName: userNameMap.get(msg.user_id) || "",
         }))
       );
     }
@@ -263,7 +336,7 @@ export default function ChatPage() {
     await channel.send({
       type: "broadcast",
       event: "message",
-      payload: { message, user_id: user?.id },
+      payload: { message, user_id: user?.id, userName: userName },
     });
   };
 
@@ -300,7 +373,7 @@ export default function ChatPage() {
           />
 
           {/* ユーザー一覧 */}
-          <UserList users={Array.from(users)} />
+          <UserList users={Array.from(users.values())} />
 
           {/* ルーム作成ボタン */}
           <button
@@ -308,7 +381,7 @@ export default function ChatPage() {
             onClick={() => setShowModal(true)}>
             ルームを作成
           </button>
-          
+
           {/* プロフィール設定リンク */}
           <a
             href="/protected/profile"
