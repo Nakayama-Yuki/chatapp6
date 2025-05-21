@@ -23,7 +23,7 @@ export default async function Signup(props: {
       <form className="flex flex-col min-w-64 max-w-64 mx-auto">
         <h1 className="text-2xl font-medium">新規登録</h1>
         <p className="text-sm text text-foreground">
-          Already have an account?{" "}
+          既にアカウントをお持ちですか?{" "}
           <Link className="text-primary font-medium underline" href="/sign-in">
             ログイン
           </Link>
