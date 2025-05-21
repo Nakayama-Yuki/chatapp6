@@ -10,9 +10,22 @@ export default async function AuthButton() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // ユーザーがログインしている場合、プロフィール情報を取得
+  let userName = "";
+  if (user) {
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", user.id)
+      .single();
+
+    // nameがある場合はそれを使用、ない場合は「ゲスト」という既定の名前を使用
+    userName = profileData?.name || "ゲスト";
+  }
+
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {user.email}!
+      Hey, {userName}!
       <form action={signOutAction}>
         <Button type="submit" variant={"outline"}>
           Sign out
