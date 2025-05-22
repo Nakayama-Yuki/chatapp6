@@ -19,21 +19,16 @@ export async function updateUserProfile(name: string) {
     return { error: "認証されていません" };
   }
 
-  console.log("更新するユーザー:", user.id, "ユーザー名:", name);
-
   // プロフィールを更新
-  const { error, data } = await supabase
+  const { error } = await supabase
     .from("profiles")
     .update({ name })
     .eq("id", user.id)
     .select();
 
   if (error) {
-    console.error("プロフィール更新エラー:", error);
     return { error: "プロフィールの更新に失敗しました" };
   }
-
-  console.log("更新結果:", data);
 
   revalidatePath("/protected");
   return { success: true };
