@@ -170,7 +170,7 @@ export default function ChatPage() {
 
   // ルーム選択時の処理
   useEffect(() => {
-    if (!selectedRoom) return;
+    if (!selectedRoom || !user) return;
 
     // メッセージをクリア
     setMessages([]);
@@ -181,6 +181,61 @@ export default function ChatPage() {
     }
 
     setUsers(new Map());
+
+    // ユーザーが選択したルームに自動的に参加する処理を追加
+    const joinRoom = async () => {
+      try {
+        // ルームの情報を取得
+        const { data: roomData, error: roomError } = await supabase
+          .from("rooms")
+          .select("topic")
+          .eq("topic", selectedRoom)
+          .single();
+
+        if (roomError) {
+          setError(roomError.message || "ルームの情報取得に失敗しました");
+          return;
+        }
+
+        // すでにルームに参加しているか確認
+        const { data: userRoomData, error: userRoomError } = await supabase
+          .from("rooms_users")
+          .select("*")
+          .eq("user_id", user.id)
+          .eq("room_topic", selectedRoom);
+
+        if (userRoomError) {
+          setError(
+            userRoomError.message || "ルーム参加状態の確認に失敗しました"
+          );
+          return;
+        }
+
+        // まだ参加していない場合は自動的に参加
+        if (!userRoomData || userRoomData.length === 0) {
+          const { error: joinError } = await supabase
+            .from("rooms_users")
+            .upsert({
+              user_id: user.id,
+              room_topic: selectedRoom,
+            });
+
+          if (joinError) {
+            setError(joinError.message || "ルームへの参加に失敗しました");
+            return;
+          }
+
+          // 参加したことを通知するシステムメッセージ
+          addSystemMessage(`ルーム「${selectedRoom}」に参加しました`);
+        }
+      } catch (err) {
+        console.error("ルーム参加エラー:", err);
+        setError("ルームへの参加中にエラーが発生しました");
+      }
+    };
+
+    // ルーム参加処理を実行
+    joinRoom();
 
     // 新しいチャンネルの購読設定
     let newChannel = supabase.channel(selectedRoom, {
