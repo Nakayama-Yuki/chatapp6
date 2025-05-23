@@ -17,12 +17,12 @@ export default function RoomList({
   onSelectRoom: (room: string) => void;
 }) {
   return (
-    <div className="bg-white h-full rounded-md text-slate-900 overflow-hidden">
+    <div className="bg-white h-full rounded-md text-slate-900 overflow-hidden flex flex-col">
       <div className="p-2 font-semibold bg-stone-100 w-full text-center">
         ルーム一覧
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-y-auto">
         {rooms.length === 0 ? (
           <div className="p-4 text-center text-gray-500 italic">
             ルームはまだありません
@@ -38,10 +38,10 @@ export default function RoomList({
                     ? "bg-green-500 text-white"
                     : "hover:bg-gray-100 text-black"
                 }
-                rounded-sm p-2 text-left transition flex items-center
+                rounded-sm p-2 text-left transition flex items-center w-full
               `}>
               <span className="mr-2">#</span>
-              {room}
+              <span className="truncate">{room}</span>
             </button>
           ))
         )}
