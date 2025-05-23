@@ -436,13 +436,6 @@ export default function ChatPage() {
             onClick={() => setShowModal(true)}>
             ルームを作成
           </button>
-
-          {/* プロフィール設定リンク */}
-          <a
-            href="/protected/profile"
-            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground hover:bg-foreground/5 transition text-center mt-2 block">
-            プロフィール設定
-          </a>
         </div>
 
         {/* チャット本体 */}
