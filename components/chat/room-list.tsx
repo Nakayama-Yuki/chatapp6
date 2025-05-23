@@ -22,7 +22,7 @@ export default function RoomList({
         ルーム一覧
       </div>
 
-      <div className="flex flex-col overflow-y-auto">
+      <div className="flex flex-col overflow-y-auto flex-grow min-h-[300px]">
         {rooms.length === 0 ? (
           <div className="p-4 text-center text-gray-500 italic">
             ルームはまだありません
