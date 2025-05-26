@@ -83,71 +83,115 @@ export default function ProfilePage() {
     }
   };
 
+  // ローディング表示
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-foreground"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md text-slate-900 mt-10">
-      <h1 className="text-2xl font-bold mb-6">プロフィール設定</h1>
+    <div className="space-y-8">
+      {/* ページヘッダー */}
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          プロフィール設定
+        </h1>
+        <p className="text-muted-foreground">
+          個人情報とアカウント設定を管理します
+        </p>
+      </div>
 
-      {message && (
-        <div
-          className={`p-4 mb-4 rounded ${
-            message.type === "success"
-              ? "bg-green-100 text-green-800"
-              : "bg-red-100 text-red-800"
-          }`}>
-          {message.text}
+      {/* プロフィールカード */}
+      <div className="bg-card border rounded-xl p-6 space-y-6">
+        {/* メッセージ表示 */}
+        {message && (
+          <div
+            className={`p-4 rounded-lg ${
+              message.type === "success"
+                ? "bg-green-50 text-green-800 border border-green-200"
+                : "bg-red-50 text-red-800 border border-red-200"
+            }`}>
+            {message.text}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* メールアドレス */}
+          <div className="space-y-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-foreground">
+              メールアドレス
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              disabled
+              className="w-full px-4 py-3 border rounded-lg bg-muted text-muted-foreground cursor-not-allowed"
+            />
+            <p className="text-xs text-muted-foreground">
+              メールアドレスは変更できません
+            </p>
+          </div>
+
+          {/* ユーザー名 */}
+          <div className="space-y-2">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-foreground">
+              ユーザー名
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full px-4 py-3 border rounded-lg bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="ユーザー名を入力してください"
+            />
+          </div>
+
+          {/* 保存ボタン */}
+          <button
+            type="submit"
+            disabled={updating}
+            className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">
+            {updating ? "更新中..." : "変更を保存"}
+          </button>
+        </form>
+      </div>
+
+      {/* アカウント情報 */}
+      <div className="bg-card border rounded-xl p-6">
+        <h2 className="text-xl font-semibold mb-4">アカウント情報</h2>
+        <div className="space-y-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">ユーザーID:</span>
+            <span className="font-mono text-xs">{user?.id}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">作成日:</span>
+            <span>
+              {user?.created_at
+                ? new Date(user.created_at).toLocaleDateString("ja-JP")
+                : "-"}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">最終ログイン:</span>
+            <span>
+              {user?.last_sign_in_at
+                ? new Date(user.last_sign_in_at).toLocaleDateString("ja-JP")
+                : "-"}
+            </span>
+          </div>
         </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1">
-            メールアドレス
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            disabled
-            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-          />
-          <p className="text-xs text-gray-500 mt-1">
-            メールアドレスは変更できません
-          </p>
-        </div>
-
-        <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-1">
-            ユーザー名
-          </label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={updating}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
-          {updating ? "更新中..." : "保存"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 }

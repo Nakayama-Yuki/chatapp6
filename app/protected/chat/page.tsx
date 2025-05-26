@@ -405,7 +405,17 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex w-full h-full p-4 md:p-10">
+    <div className="h-full flex flex-col">
+      {/* ページヘッダー */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          リアルタイムチャット
+        </h1>
+        <p className="text-muted-foreground">
+          {selectedRoom ? `#${selectedRoom}` : "ルームを選択してください"}
+        </p>
+      </div>
+
       {/* ルーム作成モーダル */}
       {showModal && (
         <CreateRoomModal
@@ -414,87 +424,118 @@ export default function ChatPage() {
         />
       )}
 
-      <div className="flex w-full h-full gap-4 flex-col md:flex-row">
-        {/* サイドバー */}
-        <div className="grow-0 flex flex-col gap-2 w-full md:w-[20rem] overflow-hidden">
+      <div className="flex-1 flex gap-6 min-h-0">
+        {/* 左サイドバー：ルーム＆ユーザー一覧 */}
+        <div className="w-80 flex flex-col gap-4 shrink-0">
           {/* ルーム一覧 */}
-          <RoomList
-            rooms={rooms}
-            selectedRoom={selectedRoom}
-            onSelectRoom={(room) => {
-              setLoading(true);
-              setSelectedRoom(room);
-            }}
-          />
+          <div className="flex-1 min-h-0">
+            <RoomList
+              rooms={rooms}
+              selectedRoom={selectedRoom}
+              onSelectRoom={(room) => {
+                setLoading(true);
+                setSelectedRoom(room);
+              }}
+            />
+          </div>
 
           {/* ユーザー一覧 */}
-          <UserList users={Array.from(users.values())} />
+          <div className="h-64">
+            <UserList users={Array.from(users.values())} />
+          </div>
 
           {/* ルーム作成ボタン */}
           <button
-            className="border border-foreground/20 rounded-md px-4 py-2 text-foreground hover:bg-foreground/5 transition"
+            className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-3 hover:bg-primary/90 transition font-medium"
             onClick={() => setShowModal(true)}>
-            ルームを作成
+            ＋ ルームを作成
           </button>
         </div>
 
-        {/* チャット本体 */}
-        <div className="grow flex flex-col gap-2 h-full">
+        {/* メインチャットエリア */}
+        <div className="flex-1 flex flex-col bg-card border rounded-xl min-h-0">
           {error ? (
-            <div className="bg-white h-full rounded-md text-slate-900 p-4 flex justify-center items-center">
+            <div className="flex-1 flex justify-center items-center p-8">
               <div className="text-center">
-                <h1 className="text-xl font-bold text-red-500">エラー</h1>
-                <p>{error}</p>
-                <p className="mt-2">このルームにアクセスする権限がありません</p>
+                <h2 className="text-xl font-bold text-destructive mb-2">
+                  エラー
+                </h2>
+                <p className="text-muted-foreground mb-2">{error}</p>
+                <p className="text-sm text-muted-foreground">
+                  このルームにアクセスする権限がありません
+                </p>
               </div>
             </div>
           ) : (
-            <div className="bg-white h-full rounded-md text-slate-900 p-2 overflow-y-auto flex flex-col gap-2">
-              {messages.length === 0 ? (
-                <div className="flex items-center justify-center h-full text-gray-500 italic">
-                  メッセージはまだありません
+            <>
+              {/* チャットヘッダー */}
+              {selectedRoom && (
+                <div className="border-b p-4">
+                  <h3 className="font-semibold text-lg">#{selectedRoom}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {Array.from(users.values()).length} 人がオンライン
+                  </p>
                 </div>
-              ) : (
-                messages.map((msg, index) => (
-                  <ChatMessage key={index} message={msg} />
-                ))
               )}
-            </div>
+
+              {/* メッセージエリア */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+                {messages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full text-muted-foreground">
+                    <div className="text-center">
+                      <div className="text-4xl mb-2">💬</div>
+                      <p>メッセージはまだありません</p>
+                      <p className="text-sm mt-1">
+                        最初のメッセージを送信しましょう！
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  messages.map((msg, index) => (
+                    <ChatMessage key={index} message={msg} />
+                  ))
+                )}
+              </div>
+
+              {/* メッセージ入力フォーム */}
+              <div className="border-t p-4">
+                <form
+                  className="flex gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    const form = e.target as HTMLFormElement;
+                    const target = form.elements[0] as HTMLInputElement;
+                    const message = target.value;
+
+                    if (message.trim()) {
+                      sendMessage(message);
+                    }
+
+                    target.value = "";
+                  }}>
+                  <label className="hidden" htmlFor="message">
+                    メッセージ
+                  </label>
+                  <input
+                    name="message"
+                    className="flex-1 rounded-lg border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    placeholder={
+                      channel
+                        ? "メッセージを入力..."
+                        : "ルームを選択してください"
+                    }
+                    disabled={!channel}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-primary text-primary-foreground rounded-lg px-6 py-3 hover:bg-primary/90 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!channel}>
+                    送信
+                  </button>
+                </form>
+              </div>
+            </>
           )}
-
-          {/* メッセージ入力フォーム */}
-          <form
-            className="flex text-foreground w-full gap-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const form = e.target as HTMLFormElement;
-              const target = form.elements[0] as HTMLInputElement;
-              const message = target.value;
-
-              if (message.trim()) {
-                sendMessage(message);
-              }
-
-              target.value = "";
-            }}>
-            <label className="hidden" htmlFor="message">
-              メッセージ
-            </label>
-            <input
-              name="message"
-              className="grow rounded-md text-black p-2 border-2 border-gray-300 focus:border-blue-500 focus:outline-hidden"
-              placeholder={
-                channel ? "メッセージを入力" : "チャンネルを選択してください"
-              }
-              disabled={!channel}
-            />
-            <button
-              type="submit"
-              className="border border-foreground/20 rounded-md px-4 py-2 text-foreground hover:bg-foreground/5 transition disabled:opacity-50"
-              disabled={!channel}>
-              送信
-            </button>
-          </form>
         </div>
       </div>
     </div>

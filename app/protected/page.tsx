@@ -15,42 +15,48 @@ export default async function ProtectedPage() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
+    <div className="space-y-8">
+      {/* ウェルカムメッセージ */}
+      <div>
+        <h1 className="text-3xl font-bold text-foreground mb-4">
+          ダッシュボード
+        </h1>
+        <div className="bg-accent text-sm p-4 rounded-lg text-foreground flex gap-3 items-center">
           <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
+          認証されたユーザーのみがアクセスできるプロテクトエリアです
         </div>
       </div>
 
-      <div className="mt-8">
-        <h2 className="font-bold text-2xl mb-4">機能</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* 機能カード */}
+      <div>
+        <h2 className="font-bold text-2xl mb-6">利用可能な機能</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Link
             href="/protected/chat"
-            className="flex items-center gap-3 p-4 bg-accent rounded-lg hover:bg-accent/80 transition">
-            <div className="bg-foreground/10 p-3 rounded-full">
-              <MessageSquare size={24} />
+            className="group flex items-center gap-4 p-6 bg-card border rounded-xl hover:shadow-md transition-all duration-200">
+            <div className="bg-primary/10 p-4 rounded-xl group-hover:bg-primary/20 transition-colors">
+              <MessageSquare size={28} className="text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">リアルタイムチャット</h3>
-              <p className="text-sm opacity-70">
-                Supabaseを使ったリアルタイムチャットを試す
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg mb-1">
+                リアルタイムチャット
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Supabaseを使ったリアルタイムチャットを体験
               </p>
             </div>
           </Link>
 
           <Link
             href="/protected/profile"
-            className="flex items-center gap-3 p-4 bg-accent rounded-lg hover:bg-accent/80 transition">
-            <div className="bg-foreground/10 p-3 rounded-full">
-              <User size={24} />
+            className="group flex items-center gap-4 p-6 bg-card border rounded-xl hover:shadow-md transition-all duration-200">
+            <div className="bg-primary/10 p-4 rounded-xl group-hover:bg-primary/20 transition-colors">
+              <User size={28} className="text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">プロフィール</h3>
-              <p className="text-sm opacity-70">
-                ユーザープロフィールの確認と編集
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg mb-1">プロフィール設定</h3>
+              <p className="text-sm text-muted-foreground">
+                個人情報とアカウント設定を管理
               </p>
             </div>
           </Link>
