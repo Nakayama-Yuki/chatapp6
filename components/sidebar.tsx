@@ -79,14 +79,6 @@ export default function Sidebar() {
           }
           flex flex-col
         `}>
-        {/* ヘッダー */}
-        <div className="p-6 border-b">
-          <h2 className="text-xl font-bold text-foreground">ChatApp</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            リアルタイムチャット
-          </p>
-        </div>
-
         {/* ナビゲーションメニュー */}
         <nav className="flex-1 p-4 space-y-2">
           {navigationItems.map((item) => {
