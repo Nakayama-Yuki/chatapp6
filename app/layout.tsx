@@ -40,7 +40,7 @@ export default function RootLayout({
                   <div className="flex gap-5 items-center font-semibold">
                     <Link href={"/"}>Supabase Chat App</Link>
                   </div>
-                  <div className="absolute right-5 top-1/2 transform -translate-y-1/2 sm:static sm:transform-none">
+                  <div className="absolute right-5">
                     <HeaderAuth />
                   </div>
                 </div>
