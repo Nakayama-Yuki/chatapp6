@@ -80,17 +80,18 @@ export default function Sidebar() {
           flex flex-col
         `}>
         {/* ナビゲーションメニュー */}
-        <nav className="flex-1 p-4 space-y-2">
-          {navigationItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
+        <nav className="flex-1 px-4 pb-4">
+          <div className="pt-20 lg:pt-4 space-y-2">
+            {navigationItems.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={`
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`
                   flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200
                   hover:bg-accent hover:text-accent-foreground
                   ${
@@ -100,9 +101,9 @@ export default function Sidebar() {
                   }
                   group
                 `}>
-                <Icon
-                  size={20}
-                  className={`
+                  <Icon
+                    size={20}
+                    className={`
                     ${
                       active
                         ? "text-primary-foreground"
@@ -110,11 +111,11 @@ export default function Sidebar() {
                     }
                     group-hover:text-accent-foreground
                   `}
-                />
-                <div className="flex-1">
-                  <div className="font-medium">{item.label}</div>
-                  <div
-                    className={`
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium">{item.label}</div>
+                    <div
+                      className={`
                       text-xs opacity-70
                       ${
                         active
@@ -123,12 +124,13 @@ export default function Sidebar() {
                       }
                       group-hover:text-accent-foreground
                     `}>
-                    {item.description}
+                      {item.description}
+                    </div>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                </Link>
+              );
+            })}
+          </div>
         </nav>
       </aside>
     </>
