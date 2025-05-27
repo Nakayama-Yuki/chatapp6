@@ -130,13 +130,6 @@ export default function Sidebar() {
             );
           })}
         </nav>
-
-        {/* フッター */}
-        <div className="p-4 border-t">
-          <div className="text-xs text-muted-foreground text-center">
-            © 2025 ChatApp
-          </div>
-        </div>
       </aside>
     </>
   );
