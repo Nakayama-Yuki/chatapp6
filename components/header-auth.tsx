@@ -3,7 +3,11 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
 
-export default async function AuthButton() {
+/**
+ * ヘッダー認証コンポーネント
+ * ユーザーの認証状態に応じてログイン/ログアウトボタンを表示
+ */
+export default async function HeaderAuth() {
   const supabase = await createClient();
 
   const {

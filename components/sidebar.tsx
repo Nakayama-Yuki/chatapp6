@@ -5,6 +5,14 @@ import { usePathname } from "next/navigation";
 import { Home, MessageSquare, User, Menu, X } from "lucide-react";
 import { useState } from "react";
 
+// ナビゲーションアイテムの型定義
+type NavigationItem = {
+  label: string;
+  href: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  description: string;
+};
+
 /**
  * サイドバーナビゲーションコンポーネント
  * ダッシュボードとチャット画面の切り替えを提供
@@ -13,8 +21,8 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // ナビゲーションアイテム
-  const navigationItems = [
+  // ナビゲーションアイテムの定義
+  const navigationItems: NavigationItem[] = [
     {
       label: "ダッシュボード",
       href: "/protected",
@@ -36,11 +44,16 @@ export default function Sidebar() {
   ];
 
   // リンクがアクティブかどうかを判定
-  const isActive = (href: string) => {
+  const isActive = (href: string): boolean => {
     if (href === "/protected") {
       return pathname === href;
     }
     return pathname.startsWith(href);
+  };
+
+  // モバイルメニューを閉じる
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   // モバイルメニューの切り替え
@@ -54,7 +67,8 @@ export default function Sidebar() {
       <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-background border rounded-md shadow-md"
         onClick={toggleMobileMenu}
-        aria-label="メニューを開く">
+        aria-label={isMobileMenuOpen ? "メニューを閉じる" : "メニューを開く"}
+        aria-expanded={isMobileMenuOpen}>
         {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
@@ -62,7 +76,8 @@ export default function Sidebar() {
       {isMobileMenuOpen && (
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={closeMobileMenu}
+          aria-hidden="true"
         />
       )}
 
@@ -78,7 +93,8 @@ export default function Sidebar() {
               : "-translate-x-full lg:translate-x-0"
           }
           flex flex-col
-        `}>
+        `}
+        aria-label="メインナビゲーション">
         {/* ナビゲーションメニュー */}
         <nav className="flex-1 px-4 pb-4">
           <div className="pt-20 lg:pt-4 space-y-2">
@@ -90,40 +106,42 @@ export default function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
+                  onClick={closeMobileMenu}
                   className={`
-                  flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200
-                  hover:bg-accent hover:text-accent-foreground
-                  ${
-                    active
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-foreground"
-                  }
-                  group
-                `}>
+                    flex items-center gap-3 px-3 py-3 rounded-lg 
+                    transition-all duration-200 group
+                    hover:bg-accent hover:text-accent-foreground
+                    focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring
+                    ${
+                      active
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-foreground"
+                    }
+                  `}
+                  aria-current={active ? "page" : undefined}>
                   <Icon
                     size={20}
                     className={`
-                    ${
-                      active
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground"
-                    }
-                    group-hover:text-accent-foreground
-                  `}
-                  />
-                  <div className="flex-1">
-                    <div className="font-medium">{item.label}</div>
-                    <div
-                      className={`
-                      text-xs opacity-70
                       ${
                         active
                           ? "text-primary-foreground"
                           : "text-muted-foreground"
                       }
                       group-hover:text-accent-foreground
-                    `}>
+                    `}
+                  />
+                  <div className="flex-1">
+                    <div className="font-medium">{item.label}</div>
+                    <div
+                      className={`
+                        text-xs opacity-70
+                        ${
+                          active
+                            ? "text-primary-foreground"
+                            : "text-muted-foreground"
+                        }
+                        group-hover:text-accent-foreground
+                      `}>
                       {item.description}
                     </div>
                   </div>
