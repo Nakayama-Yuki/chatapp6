@@ -67,9 +67,18 @@ export default function Sidebar() {
       <button
         className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-background border rounded-md shadow-md"
         onClick={toggleMobileMenu}
-        aria-label={isMobileMenuOpen ? "メニューを閉じる" : "メニューを開く"}
-        aria-expanded={isMobileMenuOpen}>
-        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        aria-label={
+          isMobileMenuOpen
+            ? "ナビゲーションメニューを閉じる"
+            : "ナビゲーションメニューを開く"
+        }
+        aria-expanded={isMobileMenuOpen}
+        aria-controls="sidebar-navigation">
+        {isMobileMenuOpen ? (
+          <X size={20} aria-hidden="true" />
+        ) : (
+          <Menu size={20} aria-hidden="true" />
+        )}
       </button>
 
       {/* モバイル用オーバーレイ */}
@@ -83,6 +92,7 @@ export default function Sidebar() {
 
       {/* サイドバー */}
       <aside
+        id="sidebar-navigation"
         className={`
           fixed lg:static inset-y-0 left-0 z-40
           w-64 bg-background border-r shadow-lg lg:shadow-none
@@ -129,16 +139,17 @@ export default function Sidebar() {
                       }
                       group-hover:text-accent-foreground
                     `}
+                    aria-hidden="true"
                   />
                   <div className="flex-1">
                     <div className="font-medium">{item.label}</div>
                     <div
                       className={`
-                        text-xs opacity-70
+                        text-xs
                         ${
                           active
-                            ? "text-primary-foreground"
-                            : "text-muted-foreground"
+                            ? "text-primary-foreground/90"
+                            : "text-muted-foreground/90"
                         }
                         group-hover:text-accent-foreground
                       `}>

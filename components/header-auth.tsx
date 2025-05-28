@@ -29,10 +29,10 @@ export default async function HeaderAuth() {
 
   return user ? (
     <div className="flex items-center gap-4">
-      Hey, {userName}!
+      <span className="text-sm">こんにちは、{userName}さん！</span>
       <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
-          Sign out
+        <Button type="submit" variant={"outline"} aria-label="ログアウト">
+          ログアウト
         </Button>
       </form>
     </div>
