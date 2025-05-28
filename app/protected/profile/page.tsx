@@ -11,7 +11,6 @@ import { User } from "@supabase/supabase-js";
 export default function ProfilePage() {
   // 状態管理
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<{
@@ -26,8 +25,6 @@ export default function ProfilePage() {
   // ユーザー情報の取得
   useEffect(() => {
     const getUser = async () => {
-      setLoading(true);
-
       // ユーザー情報を取得
       const {
         data: { user },
@@ -48,8 +45,6 @@ export default function ProfilePage() {
           setName(data.name || "");
         }
       }
-
-      setLoading(false);
     };
 
     getUser();
@@ -82,15 +77,6 @@ export default function ProfilePage() {
       setUpdating(false);
     }
   };
-
-  // ローディング表示
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">

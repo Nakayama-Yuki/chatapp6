@@ -26,7 +26,6 @@ interface Message {
 export default function ChatPage() {
   // 状態管理
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
   const [rooms, setRooms] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [users, setUsers] = useState<
@@ -162,9 +161,6 @@ export default function ChatPage() {
 
         setMainChannel(main);
         getChannels();
-      })
-      .then(() => {
-        setLoading(false);
       });
   }, []);
 
@@ -282,8 +278,6 @@ export default function ChatPage() {
         setUsers(updatedUsers);
       })
       .subscribe((status, err) => {
-        setLoading(false);
-
         if (status === "SUBSCRIBED") {
           setChannel(newChannel);
           // プレゼンス情報を送信
@@ -395,15 +389,6 @@ export default function ChatPage() {
     });
   };
 
-  // ローディング表示
-  if (loading) {
-    return (
-      <div className="fixed top-0 left-0 right-0 flex flex-col h-full w-full justify-center items-center align-middle gap-2 z-10 bg-[#000000CC]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-foreground"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-full flex flex-col">
       {/* ページヘッダー */}
@@ -433,7 +418,6 @@ export default function ChatPage() {
               rooms={rooms}
               selectedRoom={selectedRoom}
               onSelectRoom={(room) => {
-                setLoading(true);
                 setSelectedRoom(room);
               }}
             />
