@@ -2,8 +2,8 @@
 
 // ユーザーの型定義
 type User = {
+  id: string;
   name: string;
-  email: string;
 };
 
 // Props型定義
@@ -15,7 +15,7 @@ type UserListProps = {
  * ユーザーリストコンポーネント
  * オンラインユーザーの一覧表示を提供
  *
- * @param users ユーザー一覧（名前とメールアドレスを含むオブジェクト）
+ * @param users ユーザー一覧（IDと名前を含むオブジェクト）
  */
 export default function UserList({ users }: UserListProps) {
   return (
@@ -34,7 +34,7 @@ export default function UserList({ users }: UserListProps) {
         ) : (
           users.map((user) => (
             <div
-              key={user.email}
+              key={user.id}
               className="flex items-center gap-2 p-2 rounded-md hover:bg-accent transition-colors"
               role="listitem">
               <div
@@ -44,8 +44,8 @@ export default function UserList({ users }: UserListProps) {
               />
               <div
                 className="truncate font-medium text-foreground"
-                title={`${user.name || user.email} (${user.email})`}>
-                {user.name || user.email}
+                title={user.name}>
+                {user.name}
               </div>
             </div>
           ))

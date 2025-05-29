@@ -5,6 +5,7 @@ import {
   updateUserProfileAction,
   type ActionState,
 } from "@/lib/profile/actions";
+import { maskEmail } from "@/lib/utils";
 
 // ユーザーデータの型定義
 type UserData = {
@@ -17,7 +18,7 @@ type UserData = {
 
 /**
  * プロフィール編集フォームコンポーネント（Client Component）
- * useActionState を使用して簡潔に実装
+ * 
  */
 export default function ProfileForm({ userData }: { userData: UserData }) {
   // useActionState を使用してサーバ関数と状態を管理
@@ -51,7 +52,7 @@ export default function ProfileForm({ userData }: { userData: UserData }) {
           <input
             id="email"
             type="email"
-            value={userData.email}
+            value={maskEmail(userData.email)}
             disabled
             className="w-full px-4 py-3 border rounded-lg bg-muted text-muted-foreground cursor-not-allowed"
           />

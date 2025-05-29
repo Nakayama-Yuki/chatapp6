@@ -28,9 +28,9 @@ export default function ChatPage() {
   const [user, setUser] = useState<User | null>(null);
   const [rooms, setRooms] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [users, setUsers] = useState<
-    Map<string, { name: string; email: string }>
-  >(new Map());
+  const [users, setUsers] = useState<Map<string, { id: string; name: string }>>(
+    new Map()
+  );
   const [selectedRoom, setSelectedRoom] = useState<string | undefined>();
   const [mainChannel, setMainChannel] = useState<RealtimeChannel | null>(null);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
@@ -51,18 +51,18 @@ export default function ChatPage() {
 
   /**
    * ユーザーをチャンネルに追加する関数
-   * @param email 追加するユーザーのメールアドレス
+   * @param userId 追加するユーザーのID
    */
-  const addUserToChannel = async (email: string) => {
+  const addUserToChannel = async (userId: string) => {
     if (!selectedRoom) return;
 
     const user = await supabase
       .from("profiles")
       .select("id, name")
-      .eq("email", email);
+      .eq("id", userId);
 
     if (!user.data?.length) {
-      addSystemMessage(`ユーザー ${email} が見つかりませんでした`);
+      addSystemMessage(`ユーザーが見つかりませんでした`);
     } else {
       const room = await supabase
         .from("rooms")
@@ -73,7 +73,7 @@ export default function ChatPage() {
         .from("rooms_users")
         .upsert({ user_id: user.data[0].id, room_topic: room.data?.[0].topic });
 
-      const displayName = user.data[0].name || email;
+      const displayName = user.data[0].name || "ユーザー";
       addSystemMessage(
         `${displayName} をチャンネル ${selectedRoom} に追加しました`
       );
@@ -116,7 +116,7 @@ export default function ChatPage() {
         user_id: mine ? user?.id || "" : "other",
         isMine: mine,
         isSystem: system,
-        userName: userName || user?.email?.split("@")[0] || "",
+        userName: userName || "ユーザー",
       },
     ]);
   };
@@ -140,7 +140,7 @@ export default function ChatPage() {
           if (profileData && profileData.name) {
             setUserName(profileData.name);
           } else {
-            setUserName(data.data.user.email?.split("@")[0] || "");
+            setUserName("ユーザー");
           }
         }
 
@@ -257,9 +257,9 @@ export default function ChatPage() {
         // 新たに参加したユーザーを追加
         const updatedUsers = new Map(users);
         newPresences.forEach((presence) => {
-          updatedUsers.set(presence.email, {
-            email: presence.email,
-            name: presence.name || presence.email.split("@")[0],
+          updatedUsers.set(presence.user_id, {
+            id: presence.user_id,
+            name: presence.name || "ユーザー",
           });
         });
         setUsers(updatedUsers);
@@ -268,12 +268,7 @@ export default function ChatPage() {
         // 退出したユーザーを削除
         const updatedUsers = new Map(users);
         leftPresences.forEach((presence) => {
-          // 同じメールアドレスを持つユーザーを検索して削除
-          users.forEach((user, key) => {
-            if (user.email === presence.email) {
-              updatedUsers.delete(key);
-            }
-          });
+          updatedUsers.delete(presence.user_id);
         });
         setUsers(updatedUsers);
       })
@@ -281,7 +276,7 @@ export default function ChatPage() {
         if (status === "SUBSCRIBED") {
           setChannel(newChannel);
           // プレゼンス情報を送信
-          newChannel.track({ email: user?.email, name: userName });
+          newChannel.track({ user_id: user?.id, name: userName });
           setError(null);
 
           // 過去のメッセージを取得（オプション）
@@ -364,8 +359,8 @@ export default function ChatPage() {
 
     // スラッシュコマンドの処理
     if (message.startsWith("/invite")) {
-      const email = message.replace("/invite ", "");
-      await addUserToChannel(email);
+      const userId = message.replace("/invite ", "");
+      await addUserToChannel(userId);
       return;
     }
 
@@ -505,7 +500,7 @@ export default function ChatPage() {
                     className="flex-1 rounded-lg border bg-background px-4 py-3 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder={
                       channel
-                        ? "メッセージを入力..."
+                        ? "メッセージを入力... (ヒント: /invite <ユーザーID> でユーザーを招待)"
                         : "ルームを選択してください"
                     }
                     disabled={!channel}
