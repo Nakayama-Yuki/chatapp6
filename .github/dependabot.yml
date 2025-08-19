@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # npm dependencies (main package.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    # セキュリティアップデートは即座に、その他は週1回
+    open-pull-requests-limit: 10
+    # マイナーおよびパッチアップデートのみを対象（メジャーアップデートは手動で）
+    groups:
+      all-dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    # カスタムラベルを追加
+    labels:
+      - "dependencies"
+      - "npm"
+    # PRのタイトルにプレフィックスを追加
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
