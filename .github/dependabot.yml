@@ -8,7 +8,7 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Tokyo"
-    # セキュリティアップデートは即座に、その他は週1回
+    # Pull requestsの制限
     open-pull-requests-limit: 10
 
     # 特定の更新タイプを無視する設定
