@@ -10,9 +10,17 @@ updates:
       timezone: "Asia/Tokyo"
     # セキュリティアップデートは即座に、その他は週1回
     open-pull-requests-limit: 10
-    # マイナーおよびパッチアップデートのみを対象（メジャーアップデートは手動で）
+
+    # 特定の更新タイプを無視する設定
+    # メジャーアップデートを無効化（破壊的変更の可能性があるため）
+    ignore:
+      # すべての依存関係に対して
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+    # マイナーおよびパッチアップデートのみを対象
     groups:
-      all-dependencies:
+      minor-and-patch-updates:
         patterns:
           - "*"
         update-types:
