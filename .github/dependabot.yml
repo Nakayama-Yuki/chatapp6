@@ -9,7 +9,7 @@ updates:
       time: "09:00"
       timezone: "Asia/Tokyo"
     # Pull requestsの制限
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
 
     # 特定の更新タイプを無視する設定
     # メジャーアップデートを無効化（破壊的変更の可能性があるため）
@@ -26,12 +26,3 @@ updates:
         update-types:
           - "minor"
           - "patch"
-    # カスタムラベルを追加
-    labels:
-      - "dependencies"
-      - "npm"
-    # PRのタイトルにプレフィックスを追加
-    commit-message:
-      prefix: "deps"
-      prefix-development: "deps-dev"
-      include: "scope"
