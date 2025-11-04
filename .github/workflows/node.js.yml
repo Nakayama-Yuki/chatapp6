@@ -1,0 +1,73 @@
+# このワークフローは、Node.jsの依存関係をクリーンインストールし、
+# キャッシュを利用してビルドとテストを複数のNode.jsバージョンで実行します
+# 詳細: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+# ワークフローの名前（GitHub上で表示される）
+name: Node.js CI(pnpm)
+
+# ワークフローが実行されるタイミングを定義(pull_requestがmainブランチに対して作成されたとき)
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
+
+# セキュリティのため、必要最小限の権限のみを付与
+permissions:
+    contents: read
+
+# ジョブの定義（実行される処理のまとまり）
+jobs:
+    # "build"という名前のジョブ
+    build:
+        runs-on: ubuntu-latest
+
+        # マトリックス戦略: 複数のNode.jsバージョンでテストを実行
+        strategy:
+            matrix:
+                # Node.js 22.x と 24.xの２つでテストを実行
+                node-version: [22.x, 24.x]
+                # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
+
+        # 実行するステップの定義
+        steps:
+            # ステップ1: リポジトリのコードをチェックアウト（取得）
+            - uses: actions/checkout@v5
+
+            # ステップ2: pnpmパッケージマネージャーをインストール
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10 # pnpm v10を使用
+                  run_install: false # 自動的に依存関係をインストールしない
+
+            # ステップ3: 指定されたバージョンのNode.jsをセットアップ
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v6
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: "pnpm" # pnpmのキャッシュを有効化
+
+            # ステップ4: プロジェクトの依存関係をインストール
+            - name: Install dependencies
+              run: pnpm install
+
+            # ステップ5: Next.jsビルドキャッシュを復元
+            - name: Cache Next.js build
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.pnpm-store
+                      ${{ github.workspace }}/.next/cache
+                  # パッケージまたはソースファイルが変更された場合に新しいキャッシュを生成
+                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+                  #ソースファイルが変更されたがパッケージが変更されなかった場合、以前のキャッシュから再構築
+                  restore-keys: |
+                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+                      ${{ runner.os }}-nextjs-
+
+            # ステップ6: プロジェクトをビルド
+            - name: Build project
+              run: pnpm run build
+              
+            # そのうちテストを追加する
