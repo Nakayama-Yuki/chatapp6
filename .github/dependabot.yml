@@ -1,13 +1,10 @@
 version: 2
 updates:
-  # npm dependencies (main package.json)
+  # npmパッケージエコシステムの設定
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "weekly"
-
-    # Pull requestsの制限
-    open-pull-requests-limit: 5
+      interval: "weekly" # 毎週更新をチェック
 
     # 特定の更新タイプを無視する設定
     # メジャーアップデートを無効化（破壊的変更の可能性があるため）
@@ -16,7 +13,8 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-    # マイナーおよびパッチアップデートのみを対象
+    # プルリクエストを１つにまとめる設定
+    # マイナーおよびパッチアップデートをまとめる
     groups:
       minor-and-patch-updates:
         patterns:

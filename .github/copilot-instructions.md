@@ -2,7 +2,7 @@
 
 ## プロジェクト概要
 
-Supabase Realtime を活用したリアルタイムチャットアプリ。Next.js 15 App Router + React 19 + TypeScript 5 + Tailwind CSS v4 構成。
+Supabase Realtime を活用したリアルタイムチャットアプリ。Next.js 16 App Router + React 19 + TypeScript 5 + Tailwind CSS v4 構成。
 
 ## アーキテクチャ
 
