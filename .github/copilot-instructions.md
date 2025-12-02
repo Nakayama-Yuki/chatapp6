@@ -13,7 +13,7 @@ Supabase Realtime を活用したリアルタイムチャットアプリ。Next.
 ```
 
 ### 認証フロー
-1. `middleware.ts` → セッション更新 + `/protected/*` へのアクセス制御
+1. `utils/supabase/proxy.ts` → セッション更新 + `/protected/*` へのアクセス制御
 2. `utils/supabase/server.ts` → Server Component 用クライアント
 3. `utils/supabase/client.ts` → Client Component 用クライアント
 4. `lib/auth/actions.ts` → Server Actions (signIn, signUp, resetPassword)
