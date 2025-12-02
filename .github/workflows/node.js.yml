@@ -20,19 +20,12 @@ permissions:
 jobs:
     # "build"という名前のジョブ
     build:
-        runs-on: ubuntu-latest
-
-        # マトリックス戦略: 複数のNode.jsバージョンでテストを実行
-        strategy:
-            matrix:
-                # Node.js 22.x と 24.xの２つでテストを実行
-                node-version: [22.x, 24.x]
-                # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
+        runs-on: ubuntu-latest      
 
         # 実行するステップの定義
         steps:
             # ステップ1: リポジトリのコードをチェックアウト（取得）
-            - uses: actions/checkout@v5
+            - uses: actions/checkout@v6
 
             # ステップ2: pnpmパッケージマネージャーをインストール
             - name: Install pnpm
@@ -41,11 +34,12 @@ jobs:
                   version: 10 # pnpm v10を使用
                   run_install: false # 自動的に依存関係をインストールしない
 
-            # ステップ3: 指定されたバージョンのNode.jsをセットアップ
-            - name: Use Node.js ${{ matrix.node-version }}
+            # ステップ3: Node.jsのLTSバージョンをセットアップ
+            # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
+            - name: Use Node.js LTS
               uses: actions/setup-node@v6
               with:
-                  node-version: ${{ matrix.node-version }}
+                  node-version: "lts/*"
                   cache: "pnpm" # pnpmのキャッシュを有効化
 
             # ステップ4: プロジェクトの依存関係をインストール
