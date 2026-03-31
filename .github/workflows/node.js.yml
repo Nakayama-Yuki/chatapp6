@@ -7,61 +7,61 @@ name: Node.js CI(pnpm)
 
 # ワークフローが実行されるタイミングを定義(pull_requestがmainブランチに対して作成されたとき)
 on:
-    push:
-        branches: ["main"]
-    pull_request:
-        branches: ["main"]
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 # セキュリティのため、必要最小限の権限のみを付与
 permissions:
-    contents: read
+  contents: read
 
 # ジョブの定義（実行される処理のまとまり）
 jobs:
-    # "build"という名前のジョブ
-    build:
-        runs-on: ubuntu-latest      
+  # "build"という名前のジョブ
+  build:
+    runs-on: ubuntu-latest
 
-        # 実行するステップの定義
-        steps:
-            # ステップ1: リポジトリのコードをチェックアウト（取得）
-            - uses: actions/checkout@v6
+    # 実行するステップの定義
+    steps:
+      # ステップ1: リポジトリのコードをチェックアウト（取得）
+      - uses: actions/checkout@v6
 
-            # ステップ2: pnpmパッケージマネージャーをインストール
-            - name: Install pnpm
-              uses: pnpm/action-setup@v5
-              with:
-                  version: 10 # pnpm v10を使用
-                  run_install: false # 自動的に依存関係をインストールしない
+      # ステップ2: pnpmパッケージマネージャーをインストール
+      - name: Install pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10 # pnpm v10を使用
+          run_install: false # 自動的に依存関係をインストールしない
 
-            # ステップ3: Node.jsのLTSバージョンをセットアップ
-            # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
-            - name: Use Node.js LTS
-              uses: actions/setup-node@v6
-              with:
-                  node-version: "lts/*"
-                  cache: "pnpm" # pnpmのキャッシュを有効化
+      # ステップ3: Node.jsのLTSバージョンをセットアップ
+      # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
+      - name: Use Node.js LTS
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+          cache: "pnpm" # pnpmのキャッシュを有効化
 
-            # ステップ4: プロジェクトの依存関係をインストール
-            - name: Install dependencies
-              run: pnpm install
+      # ステップ4: プロジェクトの依存関係をインストール
+      - name: Install dependencies
+        run: pnpm install
 
-            # ステップ5: Next.jsビルドキャッシュを復元
-            - name: Cache Next.js build
-              uses: actions/cache@v4
-              with:
-                  path: |
-                      ~/.pnpm-store
-                      ${{ github.workspace }}/.next/cache
-                  # パッケージまたはソースファイルが変更された場合に新しいキャッシュを生成
-                  key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
-                  #ソースファイルが変更されたがパッケージが変更されなかった場合、以前のキャッシュから再構築
-                  restore-keys: |
-                      ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
-                      ${{ runner.os }}-nextjs-
+      # ステップ5: Next.jsビルドキャッシュを復元
+      - name: Cache Next.js build
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ github.workspace }}/.next/cache
+          # パッケージまたはソースファイルが変更された場合に新しいキャッシュを生成
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          #ソースファイルが変更されたがパッケージが変更されなかった場合、以前のキャッシュから再構築
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
 
-            # ステップ6: プロジェクトをビルド
-            - name: Build project
-              run: pnpm run build
-              
-            # そのうちテストを追加する
+      # ステップ6: プロジェクトをビルド
+      - name: Build project
+        run: pnpm run build
+
+      # そのうちテストを追加する
