@@ -1,5 +1,11 @@
 version: 2
 updates:
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+
   # npmパッケージエコシステムの設定
   - package-ecosystem: "npm"
     directory: "/"
