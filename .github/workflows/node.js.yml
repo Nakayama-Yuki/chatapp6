@@ -27,32 +27,19 @@ jobs:
       # ステップ1: リポジトリのコードをチェックアウト（取得）
       - uses: actions/checkout@v7
 
-      # ステップ2: pnpmパッケージマネージャーをインストール
-      - name: Install pnpm
-        uses: pnpm/action-setup@v6
+      # ステップ2: pnpm、Node.js LTS、依存関係をセットアップ
+      - name: Setup pnpm and Node.js
+        uses: pnpm/setup@v3
         with:
-          version: 10 # pnpm v10を使用
-          run_install: false # 自動的に依存関係をインストールしない
-
-      # ステップ3: Node.jsのLTSバージョンをセットアップ
-      # Node.jsのサポートスケジュール: https://nodejs.org/en/about/releases/
-      - name: Use Node.js LTS
-        uses: actions/setup-node@v7
-        with:
-          node-version: "lts/*"
-          cache: "pnpm" # pnpmのキャッシュを有効化
-
-      # ステップ4: プロジェクトの依存関係をインストール
-      - name: Install dependencies
-        run: pnpm install
+          version: 12
+          runtime: node@lts
+          cache: true
 
       # ステップ5: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
         uses: actions/cache@v6
         with:
-          path: |
-            ~/.pnpm-store
-            ${{ github.workspace }}/.next/cache
+          path: ${{ github.workspace }}/.next/cache
           # パッケージまたはソースファイルが変更された場合に新しいキャッシュを生成
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
           #ソースファイルが変更されたがパッケージが変更されなかった場合、以前のキャッシュから再構築
