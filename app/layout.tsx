@@ -3,6 +3,7 @@ import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
+import { Suspense } from "react";
 import "./globals.css";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -41,7 +42,11 @@ export default function RootLayout({
                     <Link href={"/"}>Supabase Chat App</Link>
                   </div>
                   <div className="absolute right-5">
-                    <HeaderAuth />
+                    <Suspense
+                      fallback={<span className="text-sm">読み込み中...</span>}
+                    >
+                      <HeaderAuth />
+                    </Suspense>
                   </div>
                 </div>
               </nav>

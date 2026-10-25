@@ -4,9 +4,26 @@ import SubmitButton from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+type LoginProps = {
+  searchParams: Promise<Message>;
+};
+
+/** ログイン画面を表示する。 */
+export default function Login(props: LoginProps) {
+  return (
+    <Suspense
+      fallback={<div className="w-full max-w-md mx-auto">読み込み中...</div>}
+    >
+      <LoginForm searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+/** URLのメッセージを読み込み、ログインフォームを表示する。 */
+async function LoginForm({ searchParams }: LoginProps) {
+  const message = await searchParams;
   return (
     <form className="flex-1 flex flex-col min-w-64 max-w-md w-full mx-auto">
       <h1 className="text-2xl font-medium">ログイン</h1>
@@ -36,7 +53,7 @@ export default async function Login(props: { searchParams: Promise<Message> }) {
         <SubmitButton pendingText="Signing In..." formAction={signInAction}>
           ログイン
         </SubmitButton>
-        <FormMessage message={searchParams} />
+        <FormMessage message={message} />
       </div>
     </form>
   );

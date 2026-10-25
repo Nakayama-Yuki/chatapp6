@@ -5,15 +5,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
+import { Suspense } from "react";
 
-export default async function Signup(props: {
+type SignupProps = {
   searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
-  if ("message" in searchParams) {
+};
+
+/** 新規登録画面を表示する。 */
+export default function Signup(props: SignupProps) {
+  return (
+    <Suspense
+      fallback={<div className="w-full max-w-md mx-auto">読み込み中...</div>}
+    >
+      <SignupForm searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+/** URLのメッセージを読み込み、新規登録フォームを表示する。 */
+async function SignupForm({ searchParams }: SignupProps) {
+  const message = await searchParams;
+  if ("message" in message) {
     return (
       <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
-        <FormMessage message={searchParams} />
+        <FormMessage message={message} />
       </div>
     );
   }
@@ -45,7 +60,7 @@ export default async function Signup(props: {
           <SubmitButton formAction={signUpAction} pendingText="Signing up...">
             新規登録
           </SubmitButton>
-          <FormMessage message={searchParams} />
+          <FormMessage message={message} />
         </div>
       </form>
       <div className="max-w-md w-full mx-auto mt-4">

@@ -1,16 +1,32 @@
 import { createClient } from "@/utils/supabase/server";
 import Sidebar from "@/components/sidebar";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 /**
  * プロテクトエリアのレイアウトコンポーネント
  * 認証されたユーザーのみがアクセス可能
  */
-export default async function ProtectedLayout({
-  children,
-}: {
+type ProtectedLayoutProps = {
   children: React.ReactNode;
-}) {
+};
+
+export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center">
+          読み込み中...
+        </div>
+      }
+    >
+      <ProtectedContent>{children}</ProtectedContent>
+    </Suspense>
+  );
+}
+
+/** 認証状態を確認し、ログイン済みユーザーに保護ページを表示する。 */
+async function ProtectedContent({ children }: ProtectedLayoutProps) {
   const supabase = await createClient();
 
   const {

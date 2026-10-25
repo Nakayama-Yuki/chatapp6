@@ -5,11 +5,26 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { SmtpMessage } from "../smtp-message";
+import { Suspense } from "react";
 
-export default async function ForgotPassword(props: {
+type ForgotPasswordProps = {
   searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
+};
+
+/** パスワードリセット画面を表示する。 */
+export default function ForgotPassword(props: ForgotPasswordProps) {
+  return (
+    <Suspense
+      fallback={<div className="w-full max-w-md mx-auto">読み込み中...</div>}
+    >
+      <ForgotPasswordContent searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+/** URLのメッセージを読み込み、パスワードリセットフォームを表示する。 */
+async function ForgotPasswordContent({ searchParams }: ForgotPasswordProps) {
+  const message = await searchParams;
   return (
     <>
       <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 max-w-md mx-auto">
@@ -28,7 +43,7 @@ export default async function ForgotPassword(props: {
           <SubmitButton formAction={forgotPasswordAction}>
             パスワードをリセット
           </SubmitButton>
-          <FormMessage message={searchParams} />
+          <FormMessage message={message} />
         </div>
       </form>
       <div className="max-w-md w-full mx-auto mt-4">
