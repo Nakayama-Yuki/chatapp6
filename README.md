@@ -1,6 +1,6 @@
 # chatapp6
 
-Next.js 15（App Router）＋ React 19 、Supabase Realtime を活用するリアルタイムチャットアプリです。
+Next.js 16（App Router）＋ React 19 、Supabase Realtime を活用するリアルタイムチャットアプリです。
 
 ## 主な機能
 
@@ -24,9 +24,9 @@ Next.js 15（App Router）＋ React 19 、Supabase Realtime を活用するリ�
 
 ## 技術スタック
 
-- Next.js 15（App Router）
+- Next.js 16（App Router）
 - React 19
-- TypeScript 5
+- TypeScript
 - Tailwind CSS 4
 - Supabase (Realtime, Auth, SSR)
 - PNPM
@@ -65,7 +65,7 @@ Next.js 15（App Router）＋ React 19 、Supabase Realtime を活用するリ�
 1. **リポジトリをクローン**
 
    ```bash
-   git clone <リポジトリURL> chatapp6
+   git clone https://github.com/Nakayama-Yuki/chatapp6.git
    cd chatapp6
    ```
 
@@ -98,7 +98,18 @@ Next.js 15（App Router）＋ React 19 、Supabase Realtime を活用するリ�
 6. **ブラウザで確認**  
    http://localhost:3000 にアクセスし、チャットアプリを操作できます。
 
-## ライセンス
 
-This project is licensed under the [MIT License](./LICENSE).  
-You are free to use, modify, and distribute this software, provided that proper attribution is given.
+## ビルド・検証
+
+```bash
+pnpm build
+pnpm start
+```
+
+Supabase の環境変数を設定してから実行します。現在、lint・自動テストのスクリプトはありません。認証、ルーム参加、メッセージの永続化・配信、プロフィール更新は開発サーバーでも確認してください。
+
+ライセンスファイルは現在ありません。
+
+## 開発ルール
+
+開発時の指示は [AGENTS.md](AGENTS.md) を参照してください。依存バージョンと実行可能なスクリプトは [package.json](package.json) を正とします。
