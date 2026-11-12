@@ -35,6 +35,9 @@ jobs:
           runtime: node@lts
           cache: true
 
+      - name: Type check
+        run: pnpm run typecheck
+
       # ステップ5: Next.jsビルドキャッシュを復元
       - name: Cache Next.js build
         uses: actions/cache@v6
