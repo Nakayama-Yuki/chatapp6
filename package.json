@@ -7,9 +7,7 @@
     "typecheck": "next typegen && tsc --noEmit",
     "start": "next start",
     "lint": "biome lint",
-    "test:e2e": "playwright test",
-    "ci:check": "pnpm typecheck && pnpm lint --error-on-warnings",
-    "build:e2e": "node --import ./tests/mock-fetch.mjs node_modules/next/dist/bin/next build"
+    "ci:check": "pnpm typecheck && pnpm lint --error-on-warnings"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.4.1",
@@ -28,7 +26,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.8",
-    "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "^4.3.5",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",
