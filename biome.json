@@ -1,0 +1,45 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.6.8/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/build",
+      "!**/.react-router",
+      "!**/playwright-report",
+      "!**/test-results"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "none",
+      "correctness": {
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        "noUnusedFunctionParameters": "error",
+        "noUnreachable": "error"
+      },
+      "suspicious": {
+        "noDebugger": "error",
+        "noDuplicateObjectKeys": "error",
+        "noDuplicateParameters": "error"
+      },
+      "a11y": {
+        "useButtonType": "error",
+        "noSvgWithoutTitle": "error"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": false
+  },
+  "assist": {
+    "enabled": false
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
+  }
+}

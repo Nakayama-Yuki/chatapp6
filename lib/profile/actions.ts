@@ -15,7 +15,7 @@ export type ActionState = {
  * @param formData フォームデータ
  */
 export async function updateUserProfileAction(
-  prevState: ActionState,
+  _prevState: ActionState,
   formData: FormData
 ): Promise<ActionState> {
   const supabase = await createClient();
