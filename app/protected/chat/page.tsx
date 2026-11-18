@@ -182,7 +182,7 @@ export default function ChatPage() {
     const joinRoom = async () => {
       try {
         // ルームの情報を取得
-        const { data: roomData, error: roomError } = await supabase
+        const { error: roomError } = await supabase
           .from("rooms")
           .select("topic")
           .eq("topic", selectedRoom)
@@ -425,6 +425,7 @@ export default function ChatPage() {
 
           {/* ルーム作成ボタン */}
           <button
+            type="button"
             className="w-full bg-primary text-primary-foreground rounded-lg px-4 py-3 hover:bg-primary/90 transition font-medium"
             onClick={() => setShowModal(true)}>
             ＋ ルームを作成

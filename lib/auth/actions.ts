@@ -27,7 +27,7 @@ export const signUpAction = async (formData: FormData) => {
   // 名前がない場合はメールアドレスの@前の部分を使用
   const displayName = name || email.split("@")[0];
 
-  const { error, data } = await supabase.auth.signUp({
+  const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {

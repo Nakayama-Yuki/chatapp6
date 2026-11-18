@@ -41,6 +41,7 @@ export default function RoomList({
 
             return (
               <button
+                type="button"
                 key={room}
                 onClick={() => onSelectRoom(room)}
                 className={`
