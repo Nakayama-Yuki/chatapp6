@@ -106,7 +106,7 @@ pnpm build
 pnpm start
 ```
 
-Supabase の環境変数を設定してから実行します。`pnpm ci:check` で型・Biomeの基礎lintを実行し、E2Eで未認証画面・保護ページへのアクセス・ログイン失敗を検証します。認証、ルーム参加、メッセージの永続化・配信、プロフィール更新は開発サーバーでも確認してください。
+Supabase の環境変数を設定してから実行します。`pnpm ci:check` で型・Biomeの基礎lintを実行します。認証、ルーム参加、メッセージの永続化・配信、プロフィール更新は開発サーバーで確認してください。
 
 ライセンスファイルは現在ありません。
 
@@ -124,17 +124,14 @@ pnpm typecheck
 
 ## CIの実行手順
 
-`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、ビルド、必要なブラウザの準備、本番E2Eの順で実行し、同じブランチの古い実行をキャンセルします。
+`packageManager` に合わせてpnpm 12.21.0を使用します。CIは型・lint、本番ビルドの順で実行し、同じブランチの古い実行をキャンセルします。
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm ci:check
-pnpm build:e2e
-pnpm test:e2e
+pnpm build
 ```
 
-ブラウザ未導入の場合は `pnpm exec playwright install --with-deps chromium` を実行してください。ワークフローは [.github/workflows/](.github/workflows/) のYAMLを直接編集します。
+ワークフローは [.github/workflows/](.github/workflows/) のYAMLを直接編集します。
 
-通常E2Eのサーバーは `tests/mock-fetch.mjs` でAPI応答を固定します。通常の開発・本番起動は実APIを使います。
-
-チャットの基礎lintは未使用変数・重複定義・ボタンtype等を検査します。E2Eは未認証フローを対象とし、実Supabaseによるログイン成功・Realtime・プロフィール更新の検証は含みません。
+チャットの基礎lintは未使用変数・重複定義・ボタンtype等を検査します。

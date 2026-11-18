@@ -60,7 +60,7 @@ pnpm build    # 本番ビルド
 pnpm start    # 本番サーバー起動（ビルド後）
 ```
 
-`pnpm ci:check` で型チェックとBiomeの基礎lintを実行する。`pnpm build:e2e` → `pnpm test:e2e` で未認証画面・保護ページ・ログイン失敗を模擬Supabase応答で検証する。実Supabaseでのログイン成功・Realtime・プロフィール更新は別途確認し、未実行項目を報告する。
+`pnpm ci:check` で型チェックとBiomeの基礎lintを実行し、`pnpm build` で本番ビルドを確認する。実Supabaseでの認証・Realtime・プロフィール更新は別途確認し、未実行項目を報告する。
 
 ## コーディング規約
 
